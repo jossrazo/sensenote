@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SenseNote Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #232323;
+            color: white
+        }
+        h1 {
+            color: #667eea;
+        }
+        .test-section {
+            background: #535353;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 SenseNote Test Page</h1>
+
+    <div class="test-section">
+        <h2>Sample Text 1: Short Phrase</h2>
+        <p>This is a short sentence perfect for testing basic highlighting functionality.</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Sample Text 2: Longer Paragraph</h2>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. This paragraph 
+            contains enough text to test highlighting multiple sentences and longer selections.
+        </p>
+    </div>
+
+    <div class="test-section">
+        <h2>Sample Text 3: Quote</h2>
+        <blockquote>
+            "The only way to do great work is to love what you do. If you haven't found it yet, 
+            keep looking. Don't settle." - Steve Jobs
+        </blockquote>
+        <p>Try highlighting the quote above, or just part of it!</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Sample Text 4: List Items</h2>
+        <ul>
+            <li>First item to highlight - very important information here</li>
+            <li>Second item with different content - also worth saving</li>
+            <li>Third item for testing multiple highlights on one page</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Sample Text 5: Technical Content</h2>
+        <p>
+            JavaScript is a programming language that adds interactivity to your website. 
+            This includes responding to user actions, dynamic content updates, animated graphics, 
+            and much more. Try highlighting this technical definition and adding notes about 
+            what you learned!
+        </p>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Testing Checklist:</h2>
+        <ol>
+            <li>✓ Content script loads (check console)</li>
+            <li>✓ Menu appears after text selection</li>
+            <li>✓ Clicking a color creates a highlight</li>
+            <li>✓ Highlight appears visually on the page</li>
+            <li>✓ Toast notification shows "✓ Highlight saved!"</li>
+            <li>✓ Note dialog appears (optional - can cancel)</li>
+            <li>✓ Highlight appears in extension popup</li>
+            <li>✓ Can click highlight to return to this page</li>
+        </ol>
+    </div>
+
+    <footer style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e0e0e0; text-align: center; color: #666;">
+        <p>SenseNote Extension Test Page | Select any text above to test highlighting</p>
+    </footer>
+</body>
+</html>
+

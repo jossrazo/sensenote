@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>SenseNote - Saved Highlights</title>
+        <link rel="stylesheet" href="popup.css" />
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>
+                    <img
+                        src="icons/wordmark.png"
+                        alt="SenseNote"
+                        class="wordmark"
+                    />
+                </h1>
+            </header>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button id="search-btn" class="icon-btn" title="Search">
+                        <img src="icons/search.svg" alt="Search" class="icon" />
+                    </button>
+                </div>
+                <div class="toolbar-right">
+                    <button id="filter-btn" class="icon-btn" title="Filter">
+                        <img
+                            src="icons/list-filter.svg"
+                            alt="Filter"
+                            class="icon"
+                        />
+                    </button>
+                    <button id="settings-btn" class="icon-btn" title="Settings">
+                        <img
+                            src="icons/settings.svg"
+                            alt="Settings"
+                            class="icon"
+                        />
+                    </button>
+                </div>
+            </div>
+
+            <div id="highlights-container" class="highlights-list"></div>
+
+            <div id="empty-state" class="empty-state" style="display: none">
+                <h2>No highlights yet</h2>
+                <p>Start highlighting text on any webpage to save it here.</p>
+                <div class="instructions">
+                    <p><strong>How to use:</strong></p>
+                    <ol>
+                        <li>Select text on any webpage</li>
+                        <li>Choose a highlight color</li>
+                        <li>Add notes</li>
+                        <li>Access your highlights here anytime</li>
+                    </ol>
+                </div>
+            </div>
+
+            <footer>
+                <button id="clear-all-btn" class="danger-btn">
+                    Clear All Highlights
+                </button>
+            </footer>
+        </div>
+
+        <script src="popup.js"></script>
+    </body>
+</html>
