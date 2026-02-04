@@ -71,10 +71,6 @@ header h1 {
   justify-content: center;
 }
 
-.icon-btn:hover {
-  background: #df3f3f;
-}
-
 .icon-btn:active {
   transform: scale(0.95);
 }
@@ -87,7 +83,7 @@ header h1 {
 }
 
 .icon-btn:hover .icon {
-  opacity: 0.9;
+  opacity: 1;
 }
 
 /* Highlights List */
@@ -167,10 +163,6 @@ header h1 {
   cursor: pointer;
   font-size: 13px;
   transition: all 0.2s;
-}
-
-.action-btn:hover {
-  background: #f0f0f0;
 }
 
 .highlight-text {
@@ -420,10 +412,6 @@ footer {
   cursor: pointer;
   border-radius: 4px;
   transition: background 0.2s;
-}
-
-.menu-btn:hover {
-  background: #f0f0f0;
 }
 
 .menu-icon {
