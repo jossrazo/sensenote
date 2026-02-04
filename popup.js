@@ -1,6 +1,3 @@
-// SenseNote (formerly Mark2Link) - Popup Script
-// Manages the highlight viewer and snippet management interface
-
 (function () {
   "use strict";
 
@@ -131,15 +128,15 @@
           </button>
           <div class="card-dropdown hidden">
             <button class="dropdown-item favorite-btn">
-              <span class="dropdown-icon">${highlight.favorite ? '★' : '☆'}</span>
+              <img src="icons/star.svg" alt="Favorite" class="dropdown-icon">
               <span>${highlight.favorite ? 'Remove from favorites' : 'Add to favorites'}</span>
             </button>
             <button class="dropdown-item edit-btn">
-              <span class="dropdown-icon">✏️</span>
+              <img src="icons/edit.svg" alt="Edit" class="dropdown-icon">
               <span>Edit</span>
             </button>
             <button class="dropdown-item delete-btn">
-              <span class="dropdown-icon">🗑️</span>
+              <img src="icons/trash-2.svg" alt="Delete" class="dropdown-icon">
               <span>Delete</span>
             </button>
           </div>

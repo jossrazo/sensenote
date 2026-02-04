@@ -466,9 +466,15 @@ footer {
 }
 
 .dropdown-icon {
-  font-size: 14px;
-  width: 20px;
-  text-align: center;
+  width: 16px;
+  height: 16px;
+  display: block;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.dropdown-item:hover .dropdown-icon {
+  opacity: 1;
 }
 
 /* Category Badge */
