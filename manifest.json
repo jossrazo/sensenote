@@ -25,7 +25,11 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["content.css"],
+      "resources": [
+        "content.css",
+        "icons/*.svg",
+        "icons/*.png"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

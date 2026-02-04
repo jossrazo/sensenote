@@ -250,19 +250,21 @@
 .mark2link-popup-btn {
   background: none;
   border: none;
-  font-size: 18px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
   transition: background 0.15s ease-out;
 }
 
-.mark2link-popup-btn:hover {
-  background: #f5f5f5;
+.mark2link-popup-btn-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  opacity: 0.6;
 }
 
-.mark2link-popup-btn:active {
-  background: #e0e0e0;
+.mark2link-popup-btn:hover .mark2link-popup-btn-icon {
+  opacity: 1;
 }
 
 .mark2link-info {

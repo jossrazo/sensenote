@@ -344,6 +344,9 @@
     popup.style.zIndex = '999999';
     
     const hasNote = highlight.note && highlight.note.trim().length > 0;
+
+    const editIconUrl = chrome.runtime.getURL('icons/edit.svg');
+    const deleteIconUrl = chrome.runtime.getURL('icons/trash-2.svg');
     const truncatedText = highlight.text.length > 50 
       ? highlight.text.substring(0, 50) + '...' 
       : highlight.text;
@@ -355,8 +358,12 @@
         : `<div class="mark2link-note-popup-empty">No note</div>`
       }
       <div class="mark2link-note-popup-buttons">
-        <button class="mark2link-popup-btn" id="edit-note-btn" title="Edit Note">✏️</button>
-        <button class="mark2link-popup-btn" id="delete-highlight-btn" title="Delete">🗑️</button>
+        <button class="mark2link-popup-btn" id="edit-note-btn" title="Edit Note">
+          <img src="${editIconUrl}" alt="Edit Note" class="mark2link-popup-btn-icon">
+        </button>
+        <button class="mark2link-popup-btn" id="delete-highlight-btn" title="Delete">
+          <img src="${deleteIconUrl}" alt="Delete Highlight" class="mark2link-popup-btn-icon">
+        </button>
       </div>
     `;
 
