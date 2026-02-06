@@ -785,7 +785,7 @@ footer {
   color: #1a1a1a;
   font-weight: 500;
   transition: all 0.2s;
-  cursor: default;
+  cursor: text;
   user-select: none;
   max-width: 250px;
 }

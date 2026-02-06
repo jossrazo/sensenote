@@ -646,6 +646,7 @@
     const pill = document.createElement("div");
     pill.className = "tag-pill";
     pill.setAttribute("data-tag-name", tag.name);
+    pill.title = "Double-click to edit";
 
     pill.innerHTML = `
       <span class="tag-pill-name">${escapeHtml(tag.name)}</span>
@@ -657,6 +658,13 @@
     pill.querySelector(".tag-pill-delete").addEventListener("click", (e) => {
       e.stopPropagation();
       deleteTag(tag.name);
+    });
+
+    // Double-click to edit
+    pill.addEventListener("dblclick", (e) => {
+      // Don't trigger if clicking on delete button
+      if (e.target.classList.contains("tag-pill-delete")) return;
+      showEditTagInput(pill, tag.name);
     });
 
     return pill;
@@ -737,6 +745,72 @@
     // Cancel handler
     const cancel = () => {
       inputPill.remove();
+      renderTags();
+    };
+
+    saveBtn.addEventListener("click", save);
+    cancelBtn.addEventListener("click", cancel);
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") save();
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") cancel();
+    });
+  }
+
+  // Show inline edit input for existing tag
+  function showEditTagInput(pillElement, currentName) {
+    // Create edit input pill
+    const editPill = document.createElement("div");
+    editPill.className = "tag-input-pill";
+    editPill.innerHTML = `
+      <input type="text" value="${escapeHtml(currentName)}" maxlength="30">
+      <div class="tag-input-actions">
+        <button class="tag-input-btn save" title="Save">✓</button>
+        <button class="tag-input-btn cancel" title="Cancel">×</button>
+      </div>
+    `;
+
+    // Replace the pill with edit input
+    pillElement.replaceWith(editPill);
+
+    const input = editPill.querySelector("input");
+    const saveBtn = editPill.querySelector(".save");
+    const cancelBtn = editPill.querySelector(".cancel");
+
+    input.focus();
+    input.select();
+
+    // Save handler
+    const save = async () => {
+      const newName = input.value.trim();
+      if (!newName) {
+        cancel();
+        return;
+      }
+
+      // If name hasn't changed, just cancel
+      if (newName === currentName) {
+        cancel();
+        return;
+      }
+
+      // Check if new name already exists
+      const tags = await getAllTags();
+      const existingTags = tags.map(t => t.name.toLowerCase());
+      if (existingTags.includes(newName.toLowerCase())) {
+        alert("A tag with this name already exists.");
+        input.value = currentName;
+        input.select();
+        return;
+      }
+
+      // Rename the tag
+      renameTag(currentName, newName);
+    };
+
+    // Cancel handler
+    const cancel = () => {
       renderTags();
     };
 
