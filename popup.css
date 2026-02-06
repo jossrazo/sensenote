@@ -776,11 +776,12 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 9px 16px;
   background: #ffffff;
   border: 1.5px solid #e5e5e5;
   border-radius: 50px;
   font-size: 14px;
+  line-height: 1.4;
   color: #1a1a1a;
   font-weight: 500;
   transition: all 0.2s;
@@ -798,6 +799,7 @@ footer {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .tag-pill-count {
@@ -805,6 +807,7 @@ footer {
   font-weight: 400;
   color: #999;
   flex-shrink: 0;
+  line-height: 1.4;
 }
 
 .tag-pill-delete {
@@ -867,7 +870,7 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 8px 16px;
   background: #ffffff;
   border: 2px solid #1a1a1a;
   border-radius: 50px;
@@ -886,6 +889,7 @@ footer {
   padding: 0;
   width: 120px;
   color: #1a1a1a;
+  line-height: 1.4;
 }
 
 .tag-input-pill input::placeholder {
