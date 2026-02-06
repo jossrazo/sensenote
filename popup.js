@@ -72,9 +72,13 @@
       filteredHighlights = filteredHighlights.filter(h => h.color === currentFilters.color);
     }
 
-    // Filter by category
+    // Filter by category/tag
     if (currentFilters.category !== 'all') {
-      filteredHighlights = filteredHighlights.filter(h => h.category === currentFilters.category);
+      filteredHighlights = filteredHighlights.filter(h => {
+        // Support both new tags array and old category field
+        const tags = h.tags || (h.category ? [h.category] : []);
+        return tags.includes(currentFilters.category);
+      });
     }
 
     // Sort by date
@@ -152,7 +156,10 @@
         </div>
       </div>
 
-      ${highlight.category ? `<span class="highlight-category">${escapeHtml(highlight.category)}</span>` : ''}
+      ${(() => {
+        const tags = highlight.tags || (highlight.category ? [highlight.category] : []);
+        return tags.map(tag => `<span class="highlight-category">${escapeHtml(tag)}</span>`).join('');
+      })()}
 
       <div class="highlight-text">${escapeHtml(highlight.text)}</div>
 
@@ -454,8 +461,13 @@
 
   // Handle filter
   function handleFilter() {
-    // Get all unique categories from highlights
-    const categories = [...new Set(allHighlights.map(h => h.category).filter(c => c && c.trim()))].sort();
+    // Get all unique categories/tags from highlights (support both tags array and old category field)
+    const allTags = [];
+    allHighlights.forEach(h => {
+      const tags = h.tags || (h.category ? [h.category] : []);
+      allTags.push(...tags);
+    });
+    const categories = [...new Set(allTags.filter(c => c && c.trim()))].sort();
     
     // Build category options HTML
     const categoryOptionsHtml = categories.length > 0 
@@ -611,12 +623,15 @@
           tagCounts[tag] = 0;
         });
         
-        // Get tags from highlights
+        // Get tags from highlights (support both tags array and old category field)
         allHighlights.forEach(h => {
-          if (h.category && h.category.trim()) {
-            const tag = h.category.trim();
-            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-          }
+          const tags = h.tags || (h.category ? [h.category] : []);
+          tags.forEach(tag => {
+            if (tag && tag.trim()) {
+              const trimmedTag = tag.trim();
+              tagCounts[trimmedTag] = (tagCounts[trimmedTag] || 0) + 1;
+            }
+          });
         });
 
         const tags = Object.entries(tagCounts)
@@ -847,9 +862,19 @@
       let updated = false;
 
       highlights.forEach(h => {
+        // Update in category field
         if (h.category === oldName) {
           h.category = newName;
           updated = true;
+        }
+        
+        // Update in tags array
+        if (h.tags && Array.isArray(h.tags)) {
+          const index = h.tags.indexOf(oldName);
+          if (index !== -1) {
+            h.tags[index] = newName;
+            updated = true;
+          }
         }
       });
 
@@ -875,8 +900,14 @@
       const highlights = result.highlights || [];
       
       highlights.forEach(h => {
+        // Remove from category field
         if (h.category === tagName) {
           h.category = "";
+        }
+        
+        // Remove from tags array
+        if (h.tags && Array.isArray(h.tags)) {
+          h.tags = h.tags.filter(t => t !== tagName);
         }
       });
 

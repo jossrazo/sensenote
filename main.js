@@ -606,6 +606,9 @@
         }
       });
       
+      // Get current tags (support both old category field and new tags array)
+      const currentTags = highlight.tags || (highlight.category ? [highlight.category] : []);
+      
       dialog.innerHTML = `
         <div class="mark2link-dialog-content">
           <h3>Edit Highlight</h3>
@@ -613,9 +616,9 @@
           
           <div class="mark2link-field">
             <label class="mark2link-label">Tags</label>
-            <div class="mark2link-tags-container">
+            <div class="mark2link-tags-container" id="tags-container">
               ${existingCategories.map(c => `
-                <div class="mark2link-tag-pill ${highlight.category === c ? 'selected' : ''}" data-tag="${escapeHtml(c)}">
+                <div class="mark2link-tag-pill ${currentTags.includes(c) ? 'selected' : ''}" data-tag="${escapeHtml(c)}">
                   ${escapeHtml(c)}
                 </div>
               `).join('')}
@@ -641,63 +644,124 @@
       const textarea = dialog.querySelector('.mark2link-note-input');
       const tagPills = dialog.querySelectorAll('.mark2link-tag-pill');
       const addTagBtn = dialog.querySelector('#add-tag-btn');
-      let selectedTag = highlight.category || '';
+      const tagsContainer = dialog.querySelector('#tags-container');
+      
+      let selectedTags = [...currentTags];
       
       // Stop clicks inside dialog content from closing it
       dialogContent.addEventListener('click', function(e) {
         e.stopPropagation();
       });
       
-      // Tag pill click handlers - select/deselect tags
+      // Tag pill click handlers - toggle multiple selection
       tagPills.forEach(pill => {
         pill.addEventListener('click', function(e) {
           e.preventDefault();
           const tagName = this.dataset.tag;
           
-          // Toggle selection
-          if (selectedTag === tagName) {
-            // Deselect
-            selectedTag = '';
+          // Toggle selection (allow multiple)
+          if (selectedTags.includes(tagName)) {
+            // Remove from selection
+            selectedTags = selectedTags.filter(t => t !== tagName);
             this.classList.remove('selected');
           } else {
-            // Deselect all others
-            tagPills.forEach(p => p.classList.remove('selected'));
-            // Select this one
-            selectedTag = tagName;
+            // Add to selection
+            selectedTags.push(tagName);
             this.classList.add('selected');
           }
         });
       });
       
-      // Add tag button handler
+      // Add tag button handler - show inline input
       addTagBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        const tagName = prompt('Enter new tag name:');
-        if (tagName && tagName.trim()) {
-          const trimmedTag = tagName.trim();
+        showAddTagInputInDialog();
+      });
+      
+      // Show inline input for adding tag
+      function showAddTagInputInDialog() {
+        // Check if input already exists
+        if (tagsContainer.querySelector('.mark2link-tag-input-pill')) return;
+        
+        // Remove add button temporarily
+        const addBtn = tagsContainer.querySelector('.mark2link-tag-add-btn');
+        if (addBtn) addBtn.remove();
+        
+        // Create input pill
+        const inputPill = document.createElement('div');
+        inputPill.className = 'mark2link-tag-input-pill';
+        inputPill.innerHTML = `
+          <input type="text" placeholder="Tag name..." maxlength="30">
+          <div class="mark2link-tag-input-actions">
+            <button class="mark2link-tag-input-btn save" title="Save">✓</button>
+            <button class="mark2link-tag-input-btn cancel" title="Cancel">×</button>
+          </div>
+        `;
+        
+        tagsContainer.appendChild(inputPill);
+        
+        const input = inputPill.querySelector('input');
+        const saveBtn = inputPill.querySelector('.save');
+        const cancelBtn = inputPill.querySelector('.cancel');
+        
+        input.focus();
+        
+        // Save handler
+        const save = () => {
+          const tagName = input.value.trim();
+          if (!tagName) {
+            cancel();
+            return;
+          }
           
           // Check if tag already exists
-          if (existingCategories.includes(trimmedTag)) {
+          if (existingCategories.includes(tagName)) {
             alert('This tag already exists.');
+            input.value = '';
+            input.focus();
             return;
           }
           
           // Add to custom tags
           chrome.storage.local.get(['customTags'], function(result) {
             const customTags = result.customTags || [];
-            if (!customTags.includes(trimmedTag)) {
-              customTags.push(trimmedTag);
+            if (!customTags.includes(tagName)) {
+              customTags.push(tagName);
               chrome.storage.local.set({ customTags: customTags }, function() {
-                // Select the new tag
-                selectedTag = trimmedTag;
+                // Add to selected tags
+                selectedTags.push(tagName);
                 // Reload the dialog to show the new tag
                 closeAllMenus();
                 showNoteDialog(highlightId);
               });
             }
           });
-        }
-      });
+        };
+        
+        // Cancel handler
+        const cancel = () => {
+          inputPill.remove();
+          // Re-add the add button
+          const newAddBtn = document.createElement('button');
+          newAddBtn.className = 'mark2link-tag-add-btn';
+          newAddBtn.id = 'add-tag-btn';
+          newAddBtn.textContent = '+';
+          newAddBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showAddTagInputInDialog();
+          });
+          tagsContainer.appendChild(newAddBtn);
+        };
+        
+        saveBtn.addEventListener('click', save);
+        cancelBtn.addEventListener('click', cancel);
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') save();
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') cancel();
+        });
+      }
       
       textarea.focus();
 
@@ -705,7 +769,8 @@
         e.preventDefault();
         e.stopPropagation();
         const note = textarea.value.trim();
-        saveHighlightDetails(highlightId, note, selectedTag);
+        // Save with multiple tags
+        saveHighlightDetailsWithTags(highlightId, note, selectedTags);
         closeAllMenus();
       };
 
@@ -745,6 +810,32 @@
           if (localHighlight) {
             if (note !== null) localHighlight.note = note;
             if (category !== null) localHighlight.category = category;
+          }
+          showToast('✓ Saved!');
+        });
+      }
+    });
+  }
+
+  // Save highlight details with multiple tags
+  function saveHighlightDetailsWithTags(highlightId, note, tags) {
+    chrome.storage.local.get(['highlights'], function(result) {
+      const allHighlights = result.highlights || [];
+      const highlight = allHighlights.find(h => h.id === highlightId);
+      
+      if (highlight) {
+        if (note !== null) highlight.note = note;
+        highlight.tags = tags;
+        // Keep category for backwards compatibility (use first tag or empty)
+        highlight.category = tags.length > 0 ? tags[0] : '';
+        highlight.lastModified = new Date().toISOString();
+        
+        chrome.storage.local.set({ highlights: allHighlights }, function() {
+          const localHighlight = highlights.find(h => h.id === highlightId);
+          if (localHighlight) {
+            if (note !== null) localHighlight.note = note;
+            localHighlight.tags = tags;
+            localHighlight.category = tags.length > 0 ? tags[0] : '';
           }
           showToast('✓ Saved!');
         });

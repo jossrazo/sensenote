@@ -490,8 +490,13 @@ footer {
   padding: 3px 10px;
   border-radius: 12px;
   margin-bottom: 8px;
+  margin-right: 6px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+}
+
+.highlight-category:last-child {
+  margin-right: 0;
 }
 
 /* Filter Modal */

@@ -229,6 +229,80 @@
   transform: scale(0.95);
 }
 
+/* Tag input inline (shown when adding in dialog) */
+.mark2link-tag-input-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid #c5c5c5;
+  border-radius: 50px;
+  max-width: 250px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.2s ease;
+}
+
+.mark2link-tag-input-pill input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 0;
+  width: 120px;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.mark2link-tag-input-pill input::placeholder {
+  color: #999;
+  font-weight: 400;
+}
+
+.mark2link-tag-input-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.mark2link-tag-input-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.mark2link-tag-input-btn.save {
+  color: #22c55e;
+}
+
+.mark2link-tag-input-btn.save:hover {
+  background: #f0fdf4;
+  transform: scale(1.1);
+}
+
+.mark2link-tag-input-btn.cancel {
+  color: #999;
+  font-size: 20px;
+}
+
+.mark2link-tag-input-btn.cancel:hover {
+  background: #fee;
+  color: #d33;
+  transform: scale(1.1);
+}
+
 .mark2link-note-display {
   width: 100%;
   padding: 16px;
