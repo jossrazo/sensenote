@@ -353,7 +353,8 @@
   // Navigate to highlight on page
   function navigateToHighlight(highlight) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.create({ url: highlight.url });
+      const urlWithHash = highlight.url + '#sensenote-' + highlight.id;
+      chrome.tabs.create({ url: urlWithHash });
     });
   }
 

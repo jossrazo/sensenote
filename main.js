@@ -10,10 +10,11 @@
 
   // Load existing highlights for this page
   function loadHighlights() {
-    const pageUrl = window.location.href;
+    // Strip hash from URL for comparison (to support navigation with hash)
+    const pageUrl = window.location.href.split('#')[0];
     chrome.storage.local.get(['highlights'], function(result) {
       const allHighlights = result.highlights || [];
-      highlights = allHighlights.filter(h => h.url === pageUrl);
+      highlights = allHighlights.filter(h => h.url.split('#')[0] === pageUrl);
       console.log(`SenseNote: Found ${highlights.length} highlight(s) for this page`);
       
       // Wait for page to be fully loaded before restoring
@@ -524,7 +525,7 @@
         text: text,
         textBefore: textBefore,  // Context for better matching
         textAfter: textAfter,    // Context for better matching
-        url: window.location.href,
+        url: window.location.href.split('#')[0], // Strip hash to ensure consistency
         pageTitle: document.title,
         startOffset: startOffset,
         endOffset: endOffset,
@@ -805,9 +806,65 @@
     }, 2000);
   }
 
+  // Scroll to highlight if URL contains hash
+  function scrollToHighlightFromHash() {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#sensenote-')) {
+      const highlightId = hash.replace('#sensenote-', '');
+      
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      const tryScroll = () => {
+        attempts++;
+        const highlightElement = document.querySelector(`[data-highlight-id="${highlightId}"]`);
+        
+        if (highlightElement) {
+          console.log('SenseNote: Found highlight, scrolling to it');
+          highlightElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          
+          // Flash the highlight to draw attention
+          highlightElement.style.transition = 'opacity 0.3s';
+          highlightElement.style.opacity = '0.3';
+          setTimeout(() => {
+            highlightElement.style.opacity = '1';
+            setTimeout(() => {
+              highlightElement.style.opacity = '0.3';
+              setTimeout(() => {
+                highlightElement.style.opacity = '1';
+                // Clean up hash from URL
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+              }, 300);
+            }, 300);
+          }, 300);
+        } else if (attempts < maxAttempts) {
+          console.log(`SenseNote: Highlight not found yet, retrying... (${attempts}/${maxAttempts})`);
+          setTimeout(tryScroll, 500); // Retry every 500ms
+        } else {
+          console.warn('SenseNote: Could not find highlight after', maxAttempts, 'attempts');
+          // Clean up hash anyway
+          history.replaceState(null, null, window.location.pathname + window.location.search);
+        }
+      };
+      
+      // Start trying after a short delay
+      setTimeout(tryScroll, 500);
+    }
+  }
+
   // Initialize
   console.log('SenseNote: Content script loaded successfully');
   loadHighlights();
+  
+  // Check for highlight hash after page loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scrollToHighlightFromHash);
+  } else {
+    scrollToHighlightFromHash();
+  }
 
 })();
 
