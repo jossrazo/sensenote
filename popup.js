@@ -15,7 +15,16 @@
   const clearAllBtn = document.getElementById("clear-all-btn");
   const searchBtn = document.getElementById("search-btn");
   const filterBtn = document.getElementById("filter-btn");
-  const settingsBtn = document.getElementById("settings-btn");
+  const tagsBtn = document.getElementById("tags-btn");
+  
+  // Views
+  const mainView = document.getElementById("main-view");
+  const tagsView = document.getElementById("tags-view");
+  const tagsBackBtn = document.getElementById("tags-back-btn");
+  const tagsList = document.getElementById("tags-list");
+  const tagsEmpty = document.getElementById("tags-empty");
+  const newTagInput = document.getElementById("new-tag-input");
+  const addTagBtn = document.getElementById("add-tag-btn");
 
   // Initialize
   function init() {
@@ -28,7 +37,12 @@
     clearAllBtn.addEventListener("click", handleClearAll);
     searchBtn.addEventListener("click", handleSearch);
     filterBtn.addEventListener("click", handleFilter);
-    settingsBtn.addEventListener("click", handleSettings);
+    tagsBtn.addEventListener("click", showTagsView);
+    tagsBackBtn.addEventListener("click", hideTagsView);
+    addTagBtn.addEventListener("click", handleAddTag);
+    newTagInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleAddTag();
+    });
 
     // Close dropdowns when clicking outside
     document.addEventListener("click", (e) => {
@@ -555,11 +569,249 @@
     });
   }
 
-  // Handle settings (placeholder)
-  function handleSettings() {
-    alert(
-      "Settings coming soon!\n\nPlanned features:\n• Custom highlight colors\n• Keyboard shortcuts\n• Auto-sync options\n• Export formats",
-    );
+  // ========== Tags Management ==========
+
+  // Show tags view
+  function showTagsView() {
+    mainView.style.display = "none";
+    document.querySelector("footer").style.display = "none";
+    tagsView.style.display = "flex";
+    renderTags();
+  }
+
+  // Hide tags view
+  function hideTagsView() {
+    tagsView.style.display = "none";
+    mainView.style.display = "block";
+    document.querySelector("footer").style.display = "block";
+  }
+
+  // Get all unique tags from highlights and custom tags
+  function getAllTags() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(["customTags"], function(result) {
+        const tagCounts = {};
+        const customTags = result.customTags || [];
+        
+        // Add custom tags with 0 count
+        customTags.forEach(tag => {
+          tagCounts[tag] = 0;
+        });
+        
+        // Get tags from highlights
+        allHighlights.forEach(h => {
+          if (h.category && h.category.trim()) {
+            const tag = h.category.trim();
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+          }
+        });
+
+        const tags = Object.entries(tagCounts)
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        
+        resolve(tags);
+      });
+    });
+  }
+
+  // Render tags list
+  async function renderTags() {
+    const tags = await getAllTags();
+    tagsList.innerHTML = "";
+
+    if (tags.length === 0) {
+      tagsEmpty.style.display = "flex";
+      tagsList.style.display = "none";
+      return;
+    }
+
+    tagsEmpty.style.display = "none";
+    tagsList.style.display = "block";
+
+    tags.forEach(tag => {
+      const tagItem = createTagItem(tag);
+      tagsList.appendChild(tagItem);
+    });
+  }
+
+  // Create tag item element
+  function createTagItem(tag) {
+    const item = document.createElement("div");
+    item.className = "tag-item";
+    item.setAttribute("data-tag-name", tag.name);
+
+    item.innerHTML = `
+      <div class="tag-info">
+        <span class="tag-name">${escapeHtml(tag.name)}</span>
+        <span class="tag-count">${tag.count} highlight${tag.count !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="tag-actions">
+        <button class="tag-action-btn edit" title="Edit">
+          <img src="icons/edit.svg" alt="Edit">
+        </button>
+        <button class="tag-action-btn delete" title="Delete">
+          <img src="icons/trash-2.svg" alt="Delete">
+        </button>
+      </div>
+    `;
+
+    // Edit button
+    item.querySelector(".edit").addEventListener("click", () => {
+      enterEditMode(item, tag.name);
+    });
+
+    // Delete button
+    item.querySelector(".delete").addEventListener("click", () => {
+      deleteTag(tag.name);
+    });
+
+    return item;
+  }
+
+  // Enter edit mode for a tag
+  function enterEditMode(item, currentName) {
+    item.classList.add("editing");
+    const tagInfo = item.querySelector(".tag-info");
+    const tagActions = item.querySelector(".tag-actions");
+    
+    const originalHtml = tagInfo.innerHTML;
+    const originalActions = tagActions.innerHTML;
+
+    tagInfo.innerHTML = `
+      <input type="text" class="tag-edit-input" value="${escapeHtml(currentName)}">
+    `;
+    tagActions.innerHTML = `
+      <div class="tag-edit-actions">
+        <button class="tag-edit-btn save">Save</button>
+        <button class="tag-edit-btn cancel">Cancel</button>
+      </div>
+    `;
+
+    const input = tagInfo.querySelector(".tag-edit-input");
+    input.focus();
+    input.select();
+
+    // Save handler
+    const saveHandler = () => {
+      const newName = input.value.trim();
+      if (newName && newName !== currentName) {
+        renameTag(currentName, newName);
+      } else {
+        exitEditMode();
+      }
+    };
+
+    // Exit edit mode
+    const exitEditMode = () => {
+      item.classList.remove("editing");
+      tagInfo.innerHTML = originalHtml;
+      tagActions.innerHTML = originalActions;
+      
+      // Re-attach event listeners
+      item.querySelector(".edit").addEventListener("click", () => {
+        enterEditMode(item, currentName);
+      });
+      item.querySelector(".delete").addEventListener("click", () => {
+        deleteTag(currentName);
+      });
+    };
+
+    tagActions.querySelector(".save").addEventListener("click", saveHandler);
+    tagActions.querySelector(".cancel").addEventListener("click", exitEditMode);
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") saveHandler();
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") exitEditMode();
+    });
+  }
+
+  // Add new tag
+  async function handleAddTag() {
+    const tagName = newTagInput.value.trim();
+    if (!tagName) return;
+
+    // Check if tag already exists
+    const tags = await getAllTags();
+    const existingTags = tags.map(t => t.name.toLowerCase());
+    if (existingTags.includes(tagName.toLowerCase())) {
+      alert("This tag already exists.");
+      return;
+    }
+
+    // Store the new tag
+    chrome.storage.local.get(["customTags"], function(result) {
+      const customTags = result.customTags || [];
+      if (!customTags.includes(tagName)) {
+        customTags.push(tagName);
+        chrome.storage.local.set({ customTags: customTags }, function() {
+          newTagInput.value = "";
+          renderTags();
+        });
+      }
+    });
+  }
+
+  // Rename tag across all highlights
+  function renameTag(oldName, newName) {
+    chrome.storage.local.get(["highlights", "customTags"], function(result) {
+      const highlights = result.highlights || [];
+      let updated = false;
+
+      highlights.forEach(h => {
+        if (h.category === oldName) {
+          h.category = newName;
+          updated = true;
+        }
+      });
+
+      // Also update customTags if present
+      let customTags = result.customTags || [];
+      const customIndex = customTags.indexOf(oldName);
+      if (customIndex !== -1) {
+        customTags[customIndex] = newName;
+      }
+
+      if (updated || customIndex !== -1) {
+        chrome.storage.local.set({ highlights: highlights, customTags: customTags }, function() {
+          allHighlights = highlights;
+          renderTags();
+        });
+      }
+    });
+  }
+
+  // Delete tag from all highlights
+  async function deleteTag(tagName) {
+    const tags = await getAllTags();
+    const tag = tags.find(t => t.name === tagName);
+    const count = tag ? tag.count : 0;
+
+    const message = count > 0 
+      ? `Delete tag "${tagName}"?\n\nThis will remove the tag from ${count} highlight${count !== 1 ? 's' : ''}.`
+      : `Delete tag "${tagName}"?`;
+
+    if (!confirm(message)) return;
+
+    chrome.storage.local.get(["highlights", "customTags"], function(result) {
+      const highlights = result.highlights || [];
+      
+      highlights.forEach(h => {
+        if (h.category === tagName) {
+          h.category = "";
+        }
+      });
+
+      // Also remove from customTags if present
+      let customTags = result.customTags || [];
+      customTags = customTags.filter(t => t !== tagName);
+
+      chrome.storage.local.set({ highlights: highlights, customTags: customTags }, function() {
+        allHighlights = highlights;
+        renderTags();
+      });
+    });
   }
 
   // Initialize popup
