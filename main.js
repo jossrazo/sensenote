@@ -826,20 +826,10 @@
             block: 'center' 
           });
           
-          // Flash the highlight to draw attention
-          highlightElement.style.transition = 'opacity 0.3s';
-          highlightElement.style.opacity = '0.3';
+          // Clean up hash from URL after a short delay
           setTimeout(() => {
-            highlightElement.style.opacity = '1';
-            setTimeout(() => {
-              highlightElement.style.opacity = '0.3';
-              setTimeout(() => {
-                highlightElement.style.opacity = '1';
-                // Clean up hash from URL
-                history.replaceState(null, null, window.location.pathname + window.location.search);
-              }, 300);
-            }, 300);
-          }, 300);
+            history.replaceState(null, null, window.location.pathname + window.location.search);
+          }, 1000);
         } else if (attempts < maxAttempts) {
           console.log(`SenseNote: Highlight not found yet, retrying... (${attempts}/${maxAttempts})`);
           setTimeout(tryScroll, 500); // Retry every 500ms
@@ -865,6 +855,9 @@
   } else {
     scrollToHighlightFromHash();
   }
+
+  // Listen for hash changes (when navigating within the same page)
+  window.addEventListener('hashchange', scrollToHighlightFromHash);
 
 })();
 

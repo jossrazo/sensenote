@@ -354,7 +354,22 @@
   function navigateToHighlight(highlight) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       const urlWithHash = highlight.url + '#sensenote-' + highlight.id;
-      chrome.tabs.create({ url: urlWithHash });
+      
+      if (tabs && tabs[0]) {
+        const currentUrl = tabs[0].url.split('#')[0];
+        const targetUrl = highlight.url.split('#')[0];
+        
+        // If already on the same page, just update the current tab
+        if (currentUrl === targetUrl) {
+          chrome.tabs.update(tabs[0].id, { url: urlWithHash });
+        } else {
+          // Otherwise create a new tab
+          chrome.tabs.create({ url: urlWithHash });
+        }
+      } else {
+        // Fallback: create new tab
+        chrome.tabs.create({ url: urlWithHash });
+      }
     });
   }
 
