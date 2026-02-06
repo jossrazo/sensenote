@@ -3,7 +3,6 @@
 
   let allHighlights = [];
   let currentFilters = {
-    favoriteOnly: false,
     color: 'all',
     category: 'all',
     dateSort: 'newest' // 'newest' or 'oldest'
@@ -61,11 +60,6 @@
 
     // Apply filters
     let filteredHighlights = [...allHighlights];
-
-    // Filter by favorite
-    if (currentFilters.favoriteOnly) {
-      filteredHighlights = filteredHighlights.filter(h => h.favorite === true);
-    }
 
     // Filter by color
     if (currentFilters.color !== 'all') {
@@ -140,10 +134,6 @@
             <img src="icons/ellipsis-vertical.svg" alt="Menu" class="menu-icon">
           </button>
           <div class="card-dropdown hidden">
-            <button class="dropdown-item favorite-btn">
-              <img src="icons/star.svg" alt="Favorite" class="dropdown-icon">
-              <span>${highlight.favorite ? 'Remove from favorites' : 'Add to favorites'}</span>
-            </button>
             <button class="dropdown-item edit-btn">
               <img src="icons/edit.svg" alt="Edit" class="dropdown-icon">
               <span>Edit</span>
@@ -183,7 +173,6 @@
     // Add event listeners
     const menuBtn = card.querySelector(".menu-btn");
     const dropdown = card.querySelector(".card-dropdown");
-    const favoriteBtn = card.querySelector(".favorite-btn");
     const editBtn = card.querySelector(".edit-btn");
     const deleteBtn = card.querySelector(".delete-btn");
     const pageTitle = card.querySelector(".page-title");
@@ -199,11 +188,6 @@
       dropdown.classList.toggle('hidden');
     });
 
-    favoriteBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdown.classList.add('hidden');
-      toggleFavorite(highlight.id);
-    });
     editBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       dropdown.classList.add('hidden');
@@ -438,22 +422,6 @@
     URL.revokeObjectURL(url);
   }
 
-  // Toggle favorite status
-  function toggleFavorite(highlightId) {
-    chrome.storage.local.get(["highlights"], function (result) {
-      const highlights = result.highlights || [];
-      const highlight = highlights.find((h) => h.id === highlightId);
-
-      if (highlight) {
-        highlight.favorite = !highlight.favorite;
-
-        chrome.storage.local.set({ highlights: highlights }, function () {
-          loadHighlights(); // Reload to show updated favorite status
-        });
-      }
-    });
-  }
-
   // Handle search (placeholder)
   function handleSearch() {
     alert("Search functionality coming soon!");
@@ -487,13 +455,6 @@
         <div class="filter-header">
           <h3>Filter Highlights</h3>
           <button class="close-modal-btn" title="Close">×</button>
-        </div>
-        
-        <div class="filter-section">
-          <label class="filter-label">
-            <input type="checkbox" id="filter-favorite" ${currentFilters.favoriteOnly ? 'checked' : ''}>
-            <span>Show favorites only</span>
-          </label>
         </div>
 
         <div class="filter-section">
@@ -564,7 +525,6 @@
     const closeBtn = modal.querySelector('.close-modal-btn');
     const applyBtn = modal.querySelector('.apply-filters-btn');
     const resetBtn = modal.querySelector('.reset-filters-btn');
-    const favoriteCheckbox = modal.querySelector('#filter-favorite');
 
     closeBtn.addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => {
@@ -572,7 +532,6 @@
     });
 
     applyBtn.addEventListener('click', () => {
-      currentFilters.favoriteOnly = favoriteCheckbox.checked;
       currentFilters.category = modal.querySelector('input[name="category-filter"]:checked').value;
       currentFilters.color = modal.querySelector('input[name="color-filter"]:checked').value;
       currentFilters.dateSort = modal.querySelector('input[name="date-sort"]:checked').value;
@@ -582,7 +541,6 @@
 
     resetBtn.addEventListener('click', () => {
       currentFilters = {
-        favoriteOnly: false,
         color: 'all',
         category: 'all',
         dateSort: 'newest'
