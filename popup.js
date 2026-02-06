@@ -855,16 +855,6 @@
 
   // Delete tag from all highlights
   async function deleteTag(tagName) {
-    const tags = await getAllTags();
-    const tag = tags.find(t => t.name === tagName);
-    const count = tag ? tag.count : 0;
-
-    const message = count > 0 
-      ? `Delete tag "${tagName}"?\n\nThis will remove the tag from ${count} highlight${count !== 1 ? 's' : ''}.`
-      : `Delete tag "${tagName}"?`;
-
-    if (!confirm(message)) return;
-
     chrome.storage.local.get(["highlights", "customTags"], function(result) {
       const highlights = result.highlights || [];
       
