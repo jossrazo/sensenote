@@ -585,10 +585,15 @@
 
     closeAllMenus();
 
-    // Get existing categories for suggestions
-    chrome.storage.local.get(['highlights'], function(result) {
+    // Get existing categories for suggestions (from both highlights and custom tags)
+    chrome.storage.local.get(['highlights', 'customTags'], function(result) {
       const allHighlights = result.highlights || [];
-      const existingCategories = [...new Set(allHighlights.map(h => h.category).filter(c => c && c.trim()))];
+      const customTags = result.customTags || [];
+      
+      // Combine categories from highlights and custom tags
+      const categoriesFromHighlights = allHighlights.map(h => h.category).filter(c => c && c.trim());
+      const allCategories = [...categoriesFromHighlights, ...customTags];
+      const existingCategories = [...new Set(allCategories)].sort();
       
       const dialog = document.createElement('div');
       dialog.className = 'mark2link-dialog';
