@@ -18,13 +18,12 @@
   const tagsBtn = document.getElementById("tags-btn");
   
   // Views
+  const toolbar = document.querySelector(".toolbar");
   const mainView = document.getElementById("main-view");
   const tagsView = document.getElementById("tags-view");
   const tagsBackBtn = document.getElementById("tags-back-btn");
   const tagsList = document.getElementById("tags-list");
   const tagsEmpty = document.getElementById("tags-empty");
-  const newTagInput = document.getElementById("new-tag-input");
-  const addTagBtn = document.getElementById("add-tag-btn");
 
   // Initialize
   function init() {
@@ -39,10 +38,6 @@
     filterBtn.addEventListener("click", handleFilter);
     tagsBtn.addEventListener("click", showTagsView);
     tagsBackBtn.addEventListener("click", hideTagsView);
-    addTagBtn.addEventListener("click", handleAddTag);
-    newTagInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") handleAddTag();
-    });
 
     // Close dropdowns when clicking outside
     document.addEventListener("click", (e) => {
@@ -573,6 +568,7 @@
 
   // Show tags view
   function showTagsView() {
+    toolbar.style.display = "none";
     mainView.style.display = "none";
     document.querySelector("footer").style.display = "none";
     tagsView.style.display = "flex";
@@ -582,6 +578,7 @@
   // Hide tags view
   function hideTagsView() {
     tagsView.style.display = "none";
+    toolbar.style.display = "flex";
     mainView.style.display = "block";
     document.querySelector("footer").style.display = "block";
   }
@@ -623,133 +620,133 @@
     if (tags.length === 0) {
       tagsEmpty.style.display = "flex";
       tagsList.style.display = "none";
+      // Still show add button in empty state
+      const addBtn = createAddButton();
+      tagsList.appendChild(addBtn);
+      tagsList.style.display = "flex";
       return;
     }
 
     tagsEmpty.style.display = "none";
-    tagsList.style.display = "block";
+    tagsList.style.display = "flex";
 
+    // Add all tag pills
     tags.forEach(tag => {
-      const tagItem = createTagItem(tag);
-      tagsList.appendChild(tagItem);
+      const tagPill = createTagPill(tag);
+      tagsList.appendChild(tagPill);
     });
+
+    // Add the "+" button at the end
+    const addBtn = createAddButton();
+    tagsList.appendChild(addBtn);
   }
 
-  // Create tag item element
-  function createTagItem(tag) {
-    const item = document.createElement("div");
-    item.className = "tag-item";
-    item.setAttribute("data-tag-name", tag.name);
+  // Create tag pill element
+  function createTagPill(tag) {
+    const pill = document.createElement("div");
+    pill.className = "tag-pill";
+    pill.setAttribute("data-tag-name", tag.name);
 
-    item.innerHTML = `
-      <div class="tag-info">
-        <span class="tag-name">${escapeHtml(tag.name)}</span>
-        <span class="tag-count">${tag.count} highlight${tag.count !== 1 ? 's' : ''}</span>
-      </div>
-      <div class="tag-actions">
-        <button class="tag-action-btn edit" title="Edit">
-          <img src="icons/edit.svg" alt="Edit">
-        </button>
-        <button class="tag-action-btn delete" title="Delete">
-          <img src="icons/trash-2.svg" alt="Delete">
-        </button>
-      </div>
+    pill.innerHTML = `
+      <span class="tag-pill-name">${escapeHtml(tag.name)}</span>
+      ${tag.count > 0 ? `<span class="tag-pill-count">${tag.count}</span>` : ''}
+      <button class="tag-pill-delete" title="Delete tag">×</button>
     `;
 
-    // Edit button
-    item.querySelector(".edit").addEventListener("click", () => {
-      enterEditMode(item, tag.name);
-    });
-
     // Delete button
-    item.querySelector(".delete").addEventListener("click", () => {
+    pill.querySelector(".tag-pill-delete").addEventListener("click", (e) => {
+      e.stopPropagation();
       deleteTag(tag.name);
     });
 
-    return item;
+    return pill;
   }
 
-  // Enter edit mode for a tag
-  function enterEditMode(item, currentName) {
-    item.classList.add("editing");
-    const tagInfo = item.querySelector(".tag-info");
-    const tagActions = item.querySelector(".tag-actions");
+  // Create add button
+  function createAddButton() {
+    const addBtn = document.createElement("button");
+    addBtn.className = "tag-add-btn";
+    addBtn.innerHTML = "+";
+    addBtn.title = "Add new tag";
     
-    const originalHtml = tagInfo.innerHTML;
-    const originalActions = tagActions.innerHTML;
+    addBtn.addEventListener("click", () => {
+      showAddTagInput();
+    });
 
-    tagInfo.innerHTML = `
-      <input type="text" class="tag-edit-input" value="${escapeHtml(currentName)}">
-    `;
-    tagActions.innerHTML = `
-      <div class="tag-edit-actions">
-        <button class="tag-edit-btn save">Save</button>
-        <button class="tag-edit-btn cancel">Cancel</button>
+    return addBtn;
+  }
+
+  // Show inline input for adding tag
+  function showAddTagInput() {
+    // Check if input already exists
+    if (tagsList.querySelector(".tag-input-pill")) return;
+
+    // Remove add button temporarily
+    const addBtn = tagsList.querySelector(".tag-add-btn");
+    if (addBtn) addBtn.remove();
+
+    // Create input pill
+    const inputPill = document.createElement("div");
+    inputPill.className = "tag-input-pill";
+    inputPill.innerHTML = `
+      <input type="text" placeholder="Tag name..." maxlength="30">
+      <div class="tag-input-actions">
+        <button class="tag-input-btn save" title="Save">✓</button>
+        <button class="tag-input-btn cancel" title="Cancel">×</button>
       </div>
     `;
 
-    const input = tagInfo.querySelector(".tag-edit-input");
+    tagsList.appendChild(inputPill);
+
+    const input = inputPill.querySelector("input");
+    const saveBtn = inputPill.querySelector(".save");
+    const cancelBtn = inputPill.querySelector(".cancel");
+
     input.focus();
-    input.select();
 
     // Save handler
-    const saveHandler = () => {
-      const newName = input.value.trim();
-      if (newName && newName !== currentName) {
-        renameTag(currentName, newName);
-      } else {
-        exitEditMode();
+    const save = async () => {
+      const tagName = input.value.trim();
+      if (!tagName) {
+        cancel();
+        return;
       }
+
+      // Check if tag already exists
+      const tags = await getAllTags();
+      const existingTags = tags.map(t => t.name.toLowerCase());
+      if (existingTags.includes(tagName.toLowerCase())) {
+        alert("This tag already exists.");
+        input.value = "";
+        input.focus();
+        return;
+      }
+
+      // Store the new tag
+      chrome.storage.local.get(["customTags"], function(result) {
+        const customTags = result.customTags || [];
+        if (!customTags.includes(tagName)) {
+          customTags.push(tagName);
+          chrome.storage.local.set({ customTags: customTags }, function() {
+            renderTags();
+          });
+        }
+      });
     };
 
-    // Exit edit mode
-    const exitEditMode = () => {
-      item.classList.remove("editing");
-      tagInfo.innerHTML = originalHtml;
-      tagActions.innerHTML = originalActions;
-      
-      // Re-attach event listeners
-      item.querySelector(".edit").addEventListener("click", () => {
-        enterEditMode(item, currentName);
-      });
-      item.querySelector(".delete").addEventListener("click", () => {
-        deleteTag(currentName);
-      });
+    // Cancel handler
+    const cancel = () => {
+      inputPill.remove();
+      renderTags();
     };
 
-    tagActions.querySelector(".save").addEventListener("click", saveHandler);
-    tagActions.querySelector(".cancel").addEventListener("click", exitEditMode);
+    saveBtn.addEventListener("click", save);
+    cancelBtn.addEventListener("click", cancel);
     input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") saveHandler();
+      if (e.key === "Enter") save();
     });
     input.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") exitEditMode();
-    });
-  }
-
-  // Add new tag
-  async function handleAddTag() {
-    const tagName = newTagInput.value.trim();
-    if (!tagName) return;
-
-    // Check if tag already exists
-    const tags = await getAllTags();
-    const existingTags = tags.map(t => t.name.toLowerCase());
-    if (existingTags.includes(tagName.toLowerCase())) {
-      alert("This tag already exists.");
-      return;
-    }
-
-    // Store the new tag
-    chrome.storage.local.get(["customTags"], function(result) {
-      const customTags = result.customTags || [];
-      if (!customTags.includes(tagName)) {
-        customTags.push(tagName);
-        chrome.storage.local.set({ customTags: customTags }, function() {
-          newTagInput.value = "";
-          renderTags();
-        });
-      }
+      if (e.key === "Escape") cancel();
     });
   }
 
