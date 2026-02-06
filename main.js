@@ -612,18 +612,15 @@
           <div class="mark2link-highlight-text">"${escapeHtml(highlight.text.substring(0, 100))}${highlight.text.length > 100 ? '...' : ''}"</div>
           
           <div class="mark2link-field">
-            <label class="mark2link-label">Category</label>
-            <div class="mark2link-category-input-wrapper">
-              <input type="text" class="mark2link-category-input" id="category-input" placeholder="Add category..." value="${escapeHtml(highlight.category || '')}" list="category-suggestions">
-              <datalist id="category-suggestions">
-                ${existingCategories.map(c => `<option value="${escapeHtml(c)}">`).join('')}
-              </datalist>
+            <label class="mark2link-label">Tags</label>
+            <div class="mark2link-tags-container">
+              ${existingCategories.map(c => `
+                <div class="mark2link-tag-pill ${highlight.category === c ? 'selected' : ''}" data-tag="${escapeHtml(c)}">
+                  ${escapeHtml(c)}
+                </div>
+              `).join('')}
+              <button class="mark2link-tag-add-btn" id="add-tag-btn">+</button>
             </div>
-            ${existingCategories.length > 0 ? `
-              <div class="mark2link-category-suggestions">
-                ${existingCategories.slice(0, 5).map(c => `<button class="mark2link-category-tag" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('')}
-              </div>
-            ` : ''}
           </div>
           
           <div class="mark2link-field">
@@ -642,30 +639,73 @@
 
       const dialogContent = dialog.querySelector('.mark2link-dialog-content');
       const textarea = dialog.querySelector('.mark2link-note-input');
-      const categoryInput = dialog.querySelector('#category-input');
-      const categoryTags = dialog.querySelectorAll('.mark2link-category-tag');
+      const tagPills = dialog.querySelectorAll('.mark2link-tag-pill');
+      const addTagBtn = dialog.querySelector('#add-tag-btn');
+      let selectedTag = highlight.category || '';
       
       // Stop clicks inside dialog content from closing it
       dialogContent.addEventListener('click', function(e) {
         e.stopPropagation();
       });
       
-      // Category tag click handlers
-      categoryTags.forEach(tag => {
-        tag.addEventListener('click', function(e) {
+      // Tag pill click handlers - select/deselect tags
+      tagPills.forEach(pill => {
+        pill.addEventListener('click', function(e) {
           e.preventDefault();
-          categoryInput.value = this.dataset.category;
+          const tagName = this.dataset.tag;
+          
+          // Toggle selection
+          if (selectedTag === tagName) {
+            // Deselect
+            selectedTag = '';
+            this.classList.remove('selected');
+          } else {
+            // Deselect all others
+            tagPills.forEach(p => p.classList.remove('selected'));
+            // Select this one
+            selectedTag = tagName;
+            this.classList.add('selected');
+          }
         });
       });
       
-      categoryInput.focus();
+      // Add tag button handler
+      addTagBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tagName = prompt('Enter new tag name:');
+        if (tagName && tagName.trim()) {
+          const trimmedTag = tagName.trim();
+          
+          // Check if tag already exists
+          if (existingCategories.includes(trimmedTag)) {
+            alert('This tag already exists.');
+            return;
+          }
+          
+          // Add to custom tags
+          chrome.storage.local.get(['customTags'], function(result) {
+            const customTags = result.customTags || [];
+            if (!customTags.includes(trimmedTag)) {
+              customTags.push(trimmedTag);
+              chrome.storage.local.set({ customTags: customTags }, function() {
+                // Select the new tag
+                selectedTag = trimmedTag;
+                // Reload the dialog to show the new tag
+                closeAllMenus();
+                showNoteDialog(highlightId);
+              });
+            }
+          });
+        }
+      });
+      
+      textarea.focus();
 
       dialog.querySelector('#save-note').onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
         const note = textarea.value.trim();
-        const category = categoryInput.value.trim();
-        saveHighlightDetails(highlightId, note, category);
+        saveHighlightDetails(highlightId, note, selectedTag);
         closeAllMenus();
       };
 

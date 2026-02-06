@@ -166,6 +166,69 @@
   color: #333;
 }
 
+/* New tag pill styles (similar to manage tags page) */
+.mark2link-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.mark2link-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 50px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mark2link-tag-pill:hover {
+  border-color: #c5c5c5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mark2link-tag-pill.selected {
+  background: #1a1a1a;
+  color: #ffffff;
+  border-color: #1a1a1a;
+}
+
+.mark2link-tag-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1.5px dashed #d5d5d5;
+  background: #ffffff;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+  color: #999;
+  flex-shrink: 0;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.mark2link-tag-add-btn:hover {
+  border-color: #b1b1b1;
+  border-style: solid;
+  color: #b1b1b1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mark2link-tag-add-btn:active {
+  transform: scale(0.95);
+}
+
 .mark2link-note-display {
   width: 100%;
   padding: 16px;
