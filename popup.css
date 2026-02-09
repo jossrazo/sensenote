@@ -92,10 +92,11 @@ header h1 {
 }
 
 .search-bar-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.35;
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
   flex-shrink: 0;
+  margin-left: 4px;
 }
 
 .search-bar input {
@@ -107,6 +108,8 @@ header h1 {
   font-family: inherit;
   color: #1a1a1a;
   padding: 0;
+  height: 24px;
+  line-height: 24px;
 }
 
 .search-bar input::placeholder {
