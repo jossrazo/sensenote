@@ -2,34 +2,32 @@
 .mark2link-highlight {
   background-color: #ffeb3b;
   cursor: pointer;
-  transition: opacity 0.2s;
-  padding: 2px 0;
+  padding: 1px 0;
   border-radius: 2px;
 }
 
 .mark2link-highlight:hover {
   opacity: 0.8;
-  box-shadow: 0 0 0 2px rgba(255, 235, 59, 0.3);
 }
 
-/* Context menu */
+/* Color picker menu (on text selection) */
 .mark2link-menu {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  padding: 4px 6px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   z-index: 999999;
   display: flex;
   flex-direction: row;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
 }
 
 .mark2link-menu-item {
   display: inline-block;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: none;
   background: #f0f0f0;
@@ -37,98 +35,65 @@
   cursor: pointer;
   border-radius: 50%;
   font-size: 0;
-  transition: all 0.15s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .mark2link-menu-item:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0.8;
 }
 
-.mark2link-menu-item:active {
-  transform: scale(0.95);
-}
-
-/* Dialog */
+/* Edit highlight dialog (fullscreen overlay) */
 .mark2link-dialog {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000000;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .mark2link-dialog-content {
   background: #ffffff;
-  border-radius: 16px;
-  max-width: 540px;
+  border-radius: 10px;
+  max-width: 480px;
   width: 92%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
   overflow: hidden;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .mark2link-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 28px 20px;
+  padding: 16px 20px 14px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .mark2link-dialog-header h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 600;
   color: #1a1a1a;
-  letter-spacing: -0.3px;
 }
 
 .mark2link-close-btn {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
   color: #999;
-  font-size: 32px;
+  font-size: 24px;
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
   padding: 0;
-  margin: -4px -4px 0 0;
 }
 
 .mark2link-close-btn:hover {
@@ -136,42 +101,26 @@
   color: #666;
 }
 
-.mark2link-close-btn:active {
-  transform: scale(0.9);
-}
-
 .mark2link-highlight-preview {
   position: relative;
-  padding: 20px 28px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 14px 20px;
+  background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.mark2link-quote-icon {
-  position: absolute;
-  top: 16px;
-  left: 20px;
-  width: 32px;
-  height: 32px;
-  opacity: 0.2;
-}
-
 .mark2link-highlight-text {
-  position: relative;
-  padding-left: 28px;
-  font-size: 15px;
-  line-height: 1.6;
-  color: #555;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #666;
   font-style: italic;
-  letter-spacing: 0.2px;
 }
 
 .mark2link-form {
-  padding: 24px 28px;
+  padding: 16px 20px;
 }
 
 .mark2link-field {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .mark2link-field:last-child {
@@ -181,108 +130,64 @@
 .mark2link-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4a4a4a;
-  margin-bottom: 10px;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #999;
+  margin-bottom: 8px;
+  text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
 .mark2link-label-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.7;
+  width: 12px;
+  height: 12px;
+  opacity: 0.5;
 }
 
 .mark2link-note-input {
   width: 100%;
-  min-height: 110px;
-  padding: 14px 16px;
-  border: 1.5px solid #e5e5e5;
-  border-radius: 10px;
-  font-size: 14px;
+  min-height: 88px;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 13px;
   font-family: inherit;
   resize: vertical;
   box-sizing: border-box;
-  transition: all 0.2s;
   color: #1a1a1a;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .mark2link-note-input:focus {
   outline: none;
   border-color: #1a1a1a;
-  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.08);
 }
 
 .mark2link-note-input::placeholder {
-  color: #999;
+  color: #bbb;
 }
 
-.mark2link-category-input-wrapper {
-  position: relative;
-}
-
-.mark2link-category-input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-  box-sizing: border-box;
-}
-
-.mark2link-category-input:focus {
-  outline: none;
-  border-color: #2196f3;
-}
-
-.mark2link-category-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.mark2link-category-tag {
-  background: #f0f0f0;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  color: #555;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.mark2link-category-tag:hover {
-  background: #e0e0e0;
-  color: #333;
-}
-
-/* Tag pill styles */
+/* Tag pills inside dialog */
 .mark2link-tags-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   align-items: flex-start;
-  min-height: 38px;
+  min-height: 32px;
 }
 
 .mark2link-tag-pill {
   display: inline-flex;
   align-items: center;
-  padding: 9px 16px;
-  background: #f8f8f8;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 50px;
-  font-size: 13px;
+  padding: 6px 12px;
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  font-size: 12px;
   line-height: 1.4;
-  color: #2a2a2a;
+  color: #1a1a1a;
   font-weight: 500;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   user-select: none;
 }
@@ -290,96 +195,59 @@
 .mark2link-tag-pill:hover {
   background: #f0f0f0;
   border-color: #d5d5d5;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.mark2link-tag-pill:active {
-  transform: translateY(0);
 }
 
 .mark2link-tag-pill.selected {
-  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  background: #1a1a1a;
   color: #ffffff;
   border-color: #1a1a1a;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
 .mark2link-tag-pill.selected:hover {
-  background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
-  transform: translateY(-1px);
+  background: #333;
 }
 
 .mark2link-tag-add-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1.5px dashed #d5d5d5;
-  background: #fafafa;
+  width: 32px;
+  height: 32px;
+  border: 1px dashed #d5d5d5;
+  background: transparent;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   color: #999;
   flex-shrink: 0;
 }
 
-.mark2link-tag-add-btn svg {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
 
 .mark2link-tag-add-btn:hover {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
-  border-style: solid;
-  color: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-color: #bbb;
+  color: #666;
 }
 
-.mark2link-tag-add-btn:hover svg {
-  transform: rotate(90deg);
-}
-
-.mark2link-tag-add-btn:active {
-  transform: translateY(0) scale(0.95);
-}
-
-/* Tag input inline (shown when adding in dialog) */
+/* Tag input inline (adding in dialog) */
 .mark2link-tag-input-pill {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 16px;
+  gap: 8px;
+  padding: 6px 12px;
   background: #ffffff;
-  border: 1.5px solid #1a1a1a;
-  border-radius: 50px;
-  max-width: 250px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  border: 1px solid #1a1a1a;
+  border-radius: 20px;
+  max-width: 220px;
 }
 
 .mark2link-tag-input-pill input {
   border: none;
   background: transparent;
   outline: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   font-family: inherit;
   padding: 0;
-  width: 120px;
+  width: 100px;
   color: #1a1a1a;
   line-height: 1.4;
 }
@@ -399,124 +267,114 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: none;
   background: transparent;
   border-radius: 50%;
   cursor: pointer;
   padding: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mark2link-tag-input-btn.save {
-  color: #10b981;
+  color: #22c55e;
 }
 
 .mark2link-tag-input-btn.save:hover {
-  background: #d1fae5;
-  transform: scale(1.15);
-}
-
-.mark2link-tag-input-btn.save:active {
-  transform: scale(0.95);
+  background: #f0fdf4;
 }
 
 .mark2link-tag-input-btn.cancel {
   color: #999;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .mark2link-tag-input-btn.cancel:hover {
-  background: #fee;
-  color: #ef4444;
-  transform: scale(1.15);
-}
-
-.mark2link-tag-input-btn.cancel:active {
-  transform: scale(0.95);
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .mark2link-note-display {
   width: 100%;
-  padding: 16px;
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
+  padding: 10px 12px;
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
   border-radius: 6px;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
   color: #333;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  max-height: 300px;
+  max-height: 200px;
   overflow-y: auto;
 }
 
 .mark2link-note-empty {
   width: 100%;
-  padding: 16px;
+  padding: 10px 12px;
   background: #fafafa;
-  border: 1px dashed #ccc;
+  border: 1px dashed #ddd;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   color: #999;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-style: italic;
 }
 
-/* Compact note popup (similar to color picker) */
+/* Compact note popup (on highlight click) */
 .mark2link-note-popup {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  padding: 10px 12px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  max-width: 300px;
-  min-width: 200px;
+  max-width: 260px;
+  min-width: 180px;
 }
 
 .mark2link-note-popup-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #666;
   font-style: italic;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
   border-bottom: 1px solid #f0f0f0;
   word-wrap: break-word;
+  line-height: 1.45;
 }
 
 .mark2link-note-popup-content {
-  font-size: 13px;
+  font-size: 12px;
   color: #333;
-  line-height: 1.5;
-  margin-bottom: 8px;
-  padding: 8px;
-  background: #f9f9f9;
+  line-height: 1.45;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  background: #fafafa;
   border-radius: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  max-height: 150px;
+  max-height: 120px;
   overflow-y: auto;
 }
 
 .mark2link-note-popup-empty {
-  font-size: 13px;
+  font-size: 12px;
   color: #999;
   font-style: italic;
-  margin-bottom: 8px;
-  padding: 8px;
+  margin-bottom: 6px;
+  padding: 6px 8px;
   text-align: center;
 }
 
 .mark2link-note-popup-buttons {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   justify-content: flex-end;
-  padding-top: 8px;
+  padding-top: 6px;
   border-top: 1px solid #f0f0f0;
 }
 
@@ -524,59 +382,59 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 4px;
-  transition: background 0.15s ease-out;
+}
+
+.mark2link-popup-btn:hover {
+  background: #f5f5f5;
 }
 
 .mark2link-popup-btn-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   display: block;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .mark2link-popup-btn:hover .mark2link-popup-btn-icon {
-  opacity: 1;
+  opacity: 0.85;
 }
 
 .mark2link-info {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
   color: #333;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .mark2link-info p {
-  margin: 8px 0;
+  margin: 6px 0;
 }
 
 .mark2link-info strong {
-  color: #000;
+  color: #1a1a1a;
 }
 
 .mark2link-dialog-footer {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: flex-end;
-  padding: 20px 28px 24px;
+  padding: 14px 20px 16px;
   border-top: 1px solid #f0f0f0;
-  background: #fafafa;
 }
 
 .mark2link-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 11px 24px;
+  gap: 6px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  letter-spacing: 0.2px;
   white-space: nowrap;
 }
 
@@ -585,58 +443,42 @@
 }
 
 .mark2link-btn-primary {
-  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  background: #1a1a1a;
   color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .mark2link-btn-primary:hover {
-  background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.mark2link-btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: #333;
 }
 
 .mark2link-btn-secondary {
   background: #ffffff;
-  color: #555;
-  border: 1.5px solid #e0e0e0;
+  color: #666;
+  border: 1px solid #e5e5e5;
 }
 
 .mark2link-btn-secondary:hover {
   background: #f5f5f5;
-  border-color: #d0d0d0;
-  color: #333;
-}
-
-.mark2link-btn-secondary:active {
-  transform: scale(0.97);
+  border-color: #d5d5d5;
 }
 
 /* Toast notification */
 .mark2link-toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #323232;
+  bottom: 20px;
+  right: 20px;
+  background: #1a1a1a;
   color: white;
-  padding: 14px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-size: 13px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   z-index: 1000001;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .mark2link-toast.show {
   opacity: 1;
-  transform: translateY(0);
 }
-

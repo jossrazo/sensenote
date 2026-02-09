@@ -617,7 +617,6 @@
           </div>
           
           <div class="mark2link-highlight-preview">
-            <img src="${chrome.runtime.getURL('icons/quote.svg')}" alt="" class="mark2link-quote-icon">
             <div class="mark2link-highlight-text">${escapeHtml(highlight.text.substring(0, 150))}${highlight.text.length > 150 ? '...' : ''}</div>
           </div>
           
@@ -653,12 +652,7 @@
           
           <div class="mark2link-dialog-footer">
             <button class="mark2link-btn mark2link-btn-secondary" id="cancel-note">Cancel</button>
-            <button class="mark2link-btn mark2link-btn-primary" id="save-note">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              Save Changes
-            </button>
+            <button class="mark2link-btn mark2link-btn-primary" id="save-note">Save</button>
           </div>
         </div>
       `;

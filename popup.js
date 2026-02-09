@@ -92,7 +92,7 @@
       } else {
         // Show default empty state
         emptyState.querySelector('h2').textContent = 'No highlights yet';
-        emptyState.querySelector('p').textContent = 'Start highlighting text on any webpage to save it here.';
+        emptyState.querySelector('p').textContent = 'Select text on any page to begin.';
       }
       return;
     }
