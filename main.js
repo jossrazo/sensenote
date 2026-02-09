@@ -611,29 +611,54 @@
       
       dialog.innerHTML = `
         <div class="mark2link-dialog-content">
-          <h3>Edit Highlight</h3>
-          <div class="mark2link-highlight-text">"${escapeHtml(highlight.text.substring(0, 100))}${highlight.text.length > 100 ? '...' : ''}"</div>
+          <div class="mark2link-dialog-header">
+            <h3>Edit Highlight</h3>
+            <button class="mark2link-close-btn" id="close-dialog">×</button>
+          </div>
           
-          <div class="mark2link-field">
-            <label class="mark2link-label">Tags</label>
-            <div class="mark2link-tags-container" id="tags-container">
-              ${existingCategories.map(c => `
-                <div class="mark2link-tag-pill ${currentTags.includes(c) ? 'selected' : ''}" data-tag="${escapeHtml(c)}">
-                  ${escapeHtml(c)}
-                </div>
-              `).join('')}
-              <button class="mark2link-tag-add-btn" id="add-tag-btn">+</button>
+          <div class="mark2link-highlight-preview">
+            <img src="${chrome.runtime.getURL('icons/quote.svg')}" alt="" class="mark2link-quote-icon">
+            <div class="mark2link-highlight-text">${escapeHtml(highlight.text.substring(0, 150))}${highlight.text.length > 150 ? '...' : ''}</div>
+          </div>
+          
+          <div class="mark2link-form">
+            <div class="mark2link-field">
+              <label class="mark2link-label">
+                <img src="${chrome.runtime.getURL('icons/tags.svg')}" alt="" class="mark2link-label-icon">
+                Tags
+              </label>
+              <div class="mark2link-tags-container" id="tags-container">
+                ${existingCategories.map(c => `
+                  <div class="mark2link-tag-pill ${currentTags.includes(c) ? 'selected' : ''}" data-tag="${escapeHtml(c)}">
+                    ${escapeHtml(c)}
+                  </div>
+                `).join('')}
+                <button class="mark2link-tag-add-btn" id="add-tag-btn">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="mark2link-field">
+              <label class="mark2link-label">
+                <img src="${chrome.runtime.getURL('icons/note.svg')}" alt="" class="mark2link-label-icon">
+                Note
+              </label>
+              <textarea class="mark2link-note-input" placeholder="Add your thoughts...">${escapeHtml(highlight.note || '')}</textarea>
             </div>
           </div>
           
-          <div class="mark2link-field">
-            <label class="mark2link-label">Note</label>
-            <textarea class="mark2link-note-input" placeholder="Add your note here...">${escapeHtml(highlight.note || '')}</textarea>
-          </div>
-          
-          <div class="mark2link-dialog-buttons">
-            <button class="mark2link-btn mark2link-btn-primary" id="save-note">Save</button>
+          <div class="mark2link-dialog-footer">
             <button class="mark2link-btn mark2link-btn-secondary" id="cancel-note">Cancel</button>
+            <button class="mark2link-btn mark2link-btn-primary" id="save-note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Save Changes
+            </button>
           </div>
         </div>
       `;
@@ -745,7 +770,12 @@
           const newAddBtn = document.createElement('button');
           newAddBtn.className = 'mark2link-tag-add-btn';
           newAddBtn.id = 'add-tag-btn';
-          newAddBtn.textContent = '+';
+          newAddBtn.innerHTML = `
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          `;
           newAddBtn.addEventListener('click', function(e) {
             e.preventDefault();
             showAddTagInputInDialog();
@@ -775,6 +805,12 @@
       };
 
       dialog.querySelector('#cancel-note').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeAllMenus();
+      };
+
+      dialog.querySelector('#close-dialog').onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
         closeAllMenus();
