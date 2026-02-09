@@ -749,9 +749,48 @@
               chrome.storage.local.set({ customTags: customTags }, function() {
                 // Add to selected tags
                 selectedTags.push(tagName);
-                // Reload the dialog to show the new tag
-                closeAllMenus();
-                showNoteDialog(highlightId);
+                existingCategories.push(tagName);
+
+                // Remove the input pill
+                inputPill.remove();
+
+                // Add new tag pill to the container (before the + button)
+                const newPill = document.createElement('div');
+                newPill.className = 'mark2link-tag-pill selected';
+                newPill.dataset.tag = tagName;
+                newPill.textContent = tagName;
+                newPill.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  if (selectedTags.includes(tagName)) {
+                    selectedTags.splice(selectedTags.indexOf(tagName), 1);
+                    newPill.classList.remove('selected');
+                  } else {
+                    selectedTags.push(tagName);
+                    newPill.classList.add('selected');
+                  }
+                });
+
+                // Re-add the + button, then insert pill before it
+                const existingAddBtn = tagsContainer.querySelector('.mark2link-tag-add-btn');
+                if (!existingAddBtn) {
+                  const newAddBtn = document.createElement('button');
+                  newAddBtn.className = 'mark2link-tag-add-btn';
+                  newAddBtn.id = 'add-tag-btn';
+                  newAddBtn.innerHTML = `
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  `;
+                  newAddBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showAddTagInputInDialog();
+                  });
+                  tagsContainer.appendChild(newPill);
+                  tagsContainer.appendChild(newAddBtn);
+                } else {
+                  tagsContainer.insertBefore(newPill, existingAddBtn);
+                }
               });
             }
           });
