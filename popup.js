@@ -2,6 +2,7 @@
   "use strict";
 
   let allHighlights = [];
+  let currentSearchQuery = '';
   let currentFilters = {
     color: 'all',
     category: 'all',
@@ -16,6 +17,11 @@
   const filterBtn = document.getElementById("filter-btn");
   const tagsBtn = document.getElementById("tags-btn");
   
+  // Search
+  const searchBar = document.getElementById("search-bar");
+  const searchInput = document.getElementById("search-input");
+  const searchCloseBtn = document.getElementById("search-close-btn");
+
   // Views
   const toolbar = document.querySelector(".toolbar");
   const mainView = document.getElementById("main-view");
@@ -33,7 +39,15 @@
   // Setup event listeners
   function setupEventListeners() {
     clearAllBtn.addEventListener("click", handleClearAll);
-    searchBtn.addEventListener("click", handleSearch);
+    searchBtn.addEventListener("click", openSearch);
+    searchCloseBtn.addEventListener("click", closeSearch);
+    searchInput.addEventListener("input", () => {
+      currentSearchQuery = searchInput.value.trim().toLowerCase();
+      renderHighlights();
+    });
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeSearch();
+    });
     filterBtn.addEventListener("click", handleFilter);
     tagsBtn.addEventListener("click", showTagsView);
     tagsBackBtn.addEventListener("click", hideTagsView);
@@ -61,6 +75,21 @@
     // Apply filters
     let filteredHighlights = [...allHighlights];
 
+    // Filter by search query
+    if (currentSearchQuery) {
+      filteredHighlights = filteredHighlights.filter(h => {
+        const tags = h.tags || (h.category ? [h.category] : []);
+        const searchable = [
+          h.text,
+          h.note || '',
+          h.pageTitle || '',
+          tags.join(' '),
+          h.url || ''
+        ].join(' ').toLowerCase();
+        return searchable.includes(currentSearchQuery);
+      });
+    }
+
     // Filter by color
     if (currentFilters.color !== 'all') {
       filteredHighlights = filteredHighlights.filter(h => h.color === currentFilters.color);
@@ -85,7 +114,10 @@
     // Show empty state if no highlights
     if (filteredHighlights.length === 0) {
       emptyState.style.display = "flex";
-      if (allHighlights.length > 0) {
+      if (currentSearchQuery) {
+        emptyState.querySelector('h2').textContent = 'No results';
+        emptyState.querySelector('p').textContent = `Nothing matched "${currentSearchQuery}"`;
+      } else if (allHighlights.length > 0) {
         // Show filtered empty state
         emptyState.querySelector('h2').textContent = 'No matches found';
         emptyState.querySelector('p').textContent = 'Try adjusting your filters.';
@@ -422,9 +454,21 @@
     URL.revokeObjectURL(url);
   }
 
-  // Handle search (placeholder)
-  function handleSearch() {
-    alert("Search functionality coming soon!");
+  // Open search bar
+  function openSearch() {
+    toolbar.style.display = "none";
+    searchBar.style.display = "flex";
+    searchInput.value = '';
+    searchInput.focus();
+  }
+
+  // Close search bar
+  function closeSearch() {
+    searchBar.style.display = "none";
+    toolbar.style.display = "flex";
+    currentSearchQuery = '';
+    searchInput.value = '';
+    renderHighlights();
   }
 
   // Handle filter
